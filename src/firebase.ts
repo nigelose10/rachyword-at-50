@@ -1,11 +1,22 @@
 import { initializeApp } from 'firebase/app';
+import { getAnalytics } from 'firebase/analytics';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore, collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
-import firebaseConfig from '../firebase-applet-config.json';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAJ9YZdRrFzuvY7FwDDu6QKgQ98B2hikjw",
+  authDomain: "dra50-2ee45.firebaseapp.com",
+  projectId: "dra50-2ee45",
+  storageBucket: "dra50-2ee45.firebasestorage.app",
+  messagingSenderId: "185718528780",
+  appId: "1:185718528780:web:dd28396ca9868c9de44729",
+  measurementId: "G-LYMDHB9PQ0",
+};
 
 const app = initializeApp(firebaseConfig);
+export const analytics = getAnalytics(app);
 export const auth = getAuth(app);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const db = getFirestore(app);
 
 export const loginWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
@@ -29,10 +40,9 @@ export const logout = async () => {
 
 export const submitRSVP = async (uid: string, name: string, email: string, city: string, plusOne: boolean) => {
   try {
-    // Check if user already RSVP'd
     const q = query(collection(db, 'rsvps'), where('uid', '==', uid));
     const querySnapshot = await getDocs(q);
-    
+
     if (!querySnapshot.empty) {
       throw new Error("You have already submitted an RSVP.");
     }
@@ -44,7 +54,7 @@ export const submitRSVP = async (uid: string, name: string, email: string, city:
       city,
       status: 'Pending',
       plusOne,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     });
     return docRef.id;
   } catch (error) {
