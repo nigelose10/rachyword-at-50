@@ -16,7 +16,8 @@ export const BaroqueNav: React.FC<BaroqueNavProps> = ({ onRSVP }) => {
     return () => parent.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const cities = [
+  const navLinks = [
+    { label: 'Gallery', id: 'gallery' },
     { label: 'Dubai', id: 'dubai' },
     { label: 'Canada', id: 'canada' },
     { label: 'Europe', id: 'europe' },
@@ -40,7 +41,7 @@ export const BaroqueNav: React.FC<BaroqueNavProps> = ({ onRSVP }) => {
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
-          {cities.map(c => (
+          {navLinks.map(c => (
             <a
               key={c.id}
               href={`#${c.id}`}
@@ -74,7 +75,7 @@ export const BaroqueNav: React.FC<BaroqueNavProps> = ({ onRSVP }) => {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden pt-6 pb-3 flex flex-col gap-5">
-          {cities.map(c => (
+          {navLinks.map(c => (
             <a
               key={c.id}
               href={`#${c.id}`}

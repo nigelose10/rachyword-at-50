@@ -1,6 +1,6 @@
 "use client"
 
-import { memo, useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { memo, useEffect, useLayoutEffect, useMemo, useState, useCallback } from "react"
 import {
   AnimatePresence,
   motion,
@@ -21,35 +21,25 @@ const IS_SERVER = typeof window === "undefined"
 
 export function useMediaQuery(
   query: string,
-  {
-    defaultValue = false,
-    initializeWithValue = true,
-  }: UseMediaQueryOptions = {}
+  { defaultValue = false, initializeWithValue = true }: UseMediaQueryOptions = {}
 ): boolean {
   const getMatches = (query: string): boolean => {
     if (IS_SERVER) return defaultValue
     return window.matchMedia(query).matches
   }
-
-  const [matches, setMatches] = useState<boolean>(() => {
-    if (initializeWithValue) return getMatches(query)
-    return defaultValue
-  })
-
+  const [matches, setMatches] = useState<boolean>(() =>
+    initializeWithValue ? getMatches(query) : defaultValue
+  )
   const handleChange = () => setMatches(getMatches(query))
-
   useIsomorphicLayoutEffect(() => {
-    const matchMedia = window.matchMedia(query)
+    const mq = window.matchMedia(query)
     handleChange()
-    matchMedia.addEventListener("change", handleChange)
-    return () => matchMedia.removeEventListener("change", handleChange)
+    mq.addEventListener("change", handleChange)
+    return () => mq.removeEventListener("change", handleChange)
   }, [query])
-
   return matches
 }
 
-const duration = 0.15
-const transition = { duration, ease: [0.32, 0.72, 0, 1] }
 const transitionOverlay = { duration: 0.5, ease: [0.32, 0.72, 0, 1] }
 
 const Carousel = memo(
@@ -58,13 +48,13 @@ const Carousel = memo(
     controls,
     cards,
     isCarouselActive,
-    activeImg,
+    centeredIndex,
   }: {
     handleClick: (imgUrl: string, index: number) => void
     controls: ReturnType<typeof useAnimation>
     cards: string[]
     isCarouselActive: boolean
-    activeImg: string | null
+    centeredIndex: number
   }) => {
     const isScreenSizeSm = useMediaQuery("(max-width: 640px)")
     const cylinderWidth = isScreenSizeSm ? 1100 : 1800
@@ -99,22 +89,27 @@ const Carousel = memo(
             isCarouselActive &&
             rotation.set(rotation.get() + info.offset.x * 0.05)
           }
-          onDragEnd={(_, info) =>
-            isCarouselActive &&
+          onDragEnd={(_, info) => {
+            if (!isCarouselActive) return;
+            const velocity = info.velocity.x * 0.05;
+            const current = rotation.get() + velocity;
+            // Snap to nearest face
+            const snapAngle = 360 / faceCount;
+            const snapped = Math.round(current / snapAngle) * snapAngle;
             controls.start({
-              rotateY: rotation.get() + info.velocity.x * 0.05,
+              rotateY: snapped,
               transition: {
                 type: "spring",
-                stiffness: 100,
-                damping: 30,
+                stiffness: 80,
+                damping: 20,
                 mass: 0.1,
               },
-            })
-          }
+            });
+          }}
           animate={controls}
         >
           {cards.map((imgUrl, i) => {
-            const isActive = activeImg === imgUrl;
+            const isCentered = centeredIndex === i;
             return (
               <motion.div
                 key={`key-${imgUrl}-${i}`}
@@ -128,9 +123,9 @@ const Carousel = memo(
                 <img
                   src={imgUrl}
                   alt={`DRA portrait ${i + 1}`}
-                  className="pointer-events-none w-full rounded-xl object-cover aspect-square carousel-img"
+                  className={`pointer-events-none w-full rounded-xl object-cover aspect-square carousel-img ${isCentered ? 'carousel-img-active' : ''}`}
                   style={{
-                    filter: isActive ? 'grayscale(0) brightness(1)' : 'grayscale(1) brightness(0.6)',
+                    filter: isCentered ? 'grayscale(0) brightness(1)' : 'grayscale(1) brightness(0.55)',
                     transition: 'filter 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
                   }}
                 />
@@ -146,9 +141,46 @@ const Carousel = memo(
 function ThreeDPhotoCarousel({ images }: { images?: string[] }) {
   const [activeImg, setActiveImg] = useState<string | null>(null)
   const [isCarouselActive, setIsCarouselActive] = useState(true)
+  const [centeredIndex, setCenteredIndex] = useState(0)
   const controls = useAnimation()
-
   const cards = useMemo(() => images || [], [images])
+
+  // Track which card is closest to center via rotation
+  const updateCentered = useCallback(() => {
+    // We need to read the current rotateY from the controls
+    // Use a polling approach on the animated element
+    const el = document.querySelector('[style*="rotate3d"]') as HTMLElement;
+    if (!el) return;
+    const style = el.style.transform || '';
+    const match = style.match(/rotate3d\(0,\s*1,\s*0,\s*([-\d.]+)deg\)/);
+    if (match) {
+      const rot = parseFloat(match[1]);
+      const faceCount = cards.length;
+      const snapAngle = 360 / faceCount;
+      // Normalize rotation to 0-360
+      const normalized = ((rot % 360) + 360) % 360;
+      // The face at index i is at angle i * snapAngle
+      // The front-facing card has rotation closest to 0 (or 360)
+      let closest = 0;
+      let minDist = Infinity;
+      for (let i = 0; i < faceCount; i++) {
+        const faceAngle = (i * snapAngle) % 360;
+        let dist = Math.abs(normalized - faceAngle);
+        if (dist > 180) dist = 360 - dist;
+        if (dist < minDist) {
+          minDist = dist;
+          closest = i;
+        }
+      }
+      setCenteredIndex(closest);
+    }
+  }, [cards.length]);
+
+  useEffect(() => {
+    if (!isCarouselActive) return;
+    const interval = setInterval(updateCentered, 100);
+    return () => clearInterval(interval);
+  }, [isCarouselActive, updateCentered]);
 
   const handleClick = (imgUrl: string) => {
     setActiveImg(imgUrl)
@@ -178,7 +210,6 @@ function ThreeDPhotoCarousel({ images }: { images?: string[] }) {
             }}
             transition={transitionOverlay}
           >
-            {/* Gold border frame around expanded image */}
             <motion.div
               className="relative p-[3px] rounded-2xl"
               style={{
@@ -188,16 +219,12 @@ function ThreeDPhotoCarousel({ images }: { images?: string[] }) {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
-              <motion.img
-                layoutId={`img-${activeImg}`}
+              <img
                 src={activeImg}
                 alt="DRA portrait"
                 className="max-w-[85vw] max-h-[80vh] rounded-2xl object-contain"
-                style={{ willChange: "transform" }}
               />
             </motion.div>
-
-            {/* Close hint */}
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -215,7 +242,7 @@ function ThreeDPhotoCarousel({ images }: { images?: string[] }) {
           controls={controls}
           cards={cards}
           isCarouselActive={isCarouselActive}
-          activeImg={activeImg}
+          centeredIndex={centeredIndex}
         />
       </div>
     </motion.div>

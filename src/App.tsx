@@ -4,8 +4,6 @@ import { BaroqueNav } from './components/BaroqueNav';
 import { BaroqueHero } from './components/BaroqueHero';
 import { GallerySection } from './components/GallerySection';
 import { CityShowcase } from './components/CityShowcase';
-import { ExperienceSection } from './components/ExperienceSection';
-import { EventProgram } from './components/EventProgram';
 import { BaroqueFooter } from './components/BaroqueFooter';
 import { RSVPModal } from './components/RSVPModal';
 import { AdminDashboard } from './components/AdminDashboard';
@@ -47,7 +45,6 @@ function App() {
   const [rsvpCity, setRsvpCity] = useState('Dubai');
   const [showAdmin, setShowAdmin] = useState(false);
 
-  // Check URL for /admin route
   useEffect(() => {
     const checkRoute = () => {
       setShowAdmin(window.location.hash === '#admin');
@@ -62,7 +59,6 @@ function App() {
     setRsvpOpen(true);
   }, []);
 
-  // Admin view
   if (showAdmin) {
     return (
       <div className="bg-noir text-parchment">
@@ -91,8 +87,6 @@ function App() {
           />
         ))}
 
-        <ExperienceSection />
-        <EventProgram />
         <BaroqueFooter />
       </main>
 

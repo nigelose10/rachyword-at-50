@@ -13,7 +13,7 @@ const GALLERY_IMAGES = [
 
 export const GallerySection: React.FC = () => {
   return (
-    <section className="snap-center relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden py-28">
+    <section id="gallery" className="snap-center relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden py-28">
       {/* Warm ambient glow */}
       <div className="absolute inset-0" style={{
         background: `

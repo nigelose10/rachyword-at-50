@@ -80,7 +80,7 @@ export const CityShowcase: React.FC<CityShowcaseProps> = ({ city, index, onRSVP 
           </div>
 
           {/* City Name */}
-          <h2 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-gold-gradient leading-[0.85] mb-7">
+          <h2 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-gold-gradient leading-[1.05] mb-7 pb-1 overflow-visible">
             {city.name}
           </h2>
 
