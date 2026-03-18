@@ -27,39 +27,29 @@ export function useMediaQuery(
   }: UseMediaQueryOptions = {}
 ): boolean {
   const getMatches = (query: string): boolean => {
-    if (IS_SERVER) {
-      return defaultValue
-    }
+    if (IS_SERVER) return defaultValue
     return window.matchMedia(query).matches
   }
 
   const [matches, setMatches] = useState<boolean>(() => {
-    if (initializeWithValue) {
-      return getMatches(query)
-    }
+    if (initializeWithValue) return getMatches(query)
     return defaultValue
   })
 
-  const handleChange = () => {
-    setMatches(getMatches(query))
-  }
+  const handleChange = () => setMatches(getMatches(query))
 
   useIsomorphicLayoutEffect(() => {
     const matchMedia = window.matchMedia(query)
     handleChange()
-
     matchMedia.addEventListener("change", handleChange)
-
-    return () => {
-      matchMedia.removeEventListener("change", handleChange)
-    }
+    return () => matchMedia.removeEventListener("change", handleChange)
   }, [query])
 
   return matches
 }
 
 const duration = 0.15
-const transition = { duration, ease: [0.32, 0.72, 0, 1], filter: "blur(4px)" }
+const transition = { duration, ease: [0.32, 0.72, 0, 1] }
 const transitionOverlay = { duration: 0.5, ease: [0.32, 0.72, 0, 1] }
 
 const Carousel = memo(
@@ -68,11 +58,13 @@ const Carousel = memo(
     controls,
     cards,
     isCarouselActive,
+    activeImg,
   }: {
     handleClick: (imgUrl: string, index: number) => void
     controls: ReturnType<typeof useAnimation>
     cards: string[]
     isCarouselActive: boolean
+    activeImg: string | null
   }) => {
     const isScreenSizeSm = useMediaQuery("(max-width: 640px)")
     const cylinderWidth = isScreenSizeSm ? 1100 : 1800
@@ -121,30 +113,36 @@ const Carousel = memo(
           }
           animate={controls}
         >
-          {cards.map((imgUrl, i) => (
-            <motion.div
-              key={`key-${imgUrl}-${i}`}
-              className="absolute flex h-full origin-center items-center justify-center rounded-xl p-2"
-              style={{
-                width: `${faceWidth}px`,
-                transform: `rotateY(${
-                  i * (360 / faceCount)
-                }deg) translateZ(${radius}px)`,
-              }}
-              onClick={() => handleClick(imgUrl, i)}
-            >
-              <motion.img
-                src={imgUrl}
-                alt={`Gallery photo ${i + 1}`}
-                layoutId={`img-${imgUrl}`}
-                className="pointer-events-none w-full rounded-xl object-cover aspect-square"
-                initial={{ filter: "blur(4px)" }}
-                layout="position"
-                animate={{ filter: "blur(0px)" }}
-                transition={transition}
-              />
-            </motion.div>
-          ))}
+          {cards.map((imgUrl, i) => {
+            const isActive = activeImg === imgUrl;
+            return (
+              <motion.div
+                key={`key-${imgUrl}-${i}`}
+                className="absolute flex h-full origin-center items-center justify-center rounded-xl p-2"
+                style={{
+                  width: `${faceWidth}px`,
+                  transform: `rotateY(${i * (360 / faceCount)}deg) translateZ(${radius}px)`,
+                }}
+                onClick={() => handleClick(imgUrl, i)}
+              >
+                <motion.img
+                  src={imgUrl}
+                  alt={`DRA portrait ${i + 1}`}
+                  layoutId={`img-${imgUrl}`}
+                  className="pointer-events-none w-full rounded-xl object-cover aspect-square"
+                  style={{
+                    filter: isActive ? 'grayscale(0) brightness(1)' : 'grayscale(1) brightness(0.6)',
+                    transition: 'filter 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
+                  }}
+                  initial={{ filter: "blur(4px) grayscale(1)" }}
+                  layout="position"
+                  animate={{ filter: isActive ? "blur(0px) grayscale(0)" : "blur(0px) grayscale(1) brightness(0.6)" }}
+                  whileHover={{ filter: "blur(0px) grayscale(0) brightness(1)" }}
+                  transition={transition}
+                />
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
     )
@@ -156,10 +154,7 @@ function ThreeDPhotoCarousel({ images }: { images?: string[] }) {
   const [isCarouselActive, setIsCarouselActive] = useState(true)
   const controls = useAnimation()
 
-  const cards = useMemo(
-    () => images || [],
-    [images]
-  )
+  const cards = useMemo(() => images || [], [images])
 
   const handleClick = (imgUrl: string) => {
     setActiveImg(imgUrl)
@@ -177,29 +172,46 @@ function ThreeDPhotoCarousel({ images }: { images?: string[] }) {
       <AnimatePresence mode="sync">
         {activeImg && (
           <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0 }}
-            layoutId={`img-container-${activeImg}`}
-            layout="position"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 cursor-pointer"
-            style={{ willChange: "opacity" }}
+            className="fixed inset-0 flex items-center justify-center z-50 cursor-pointer"
+            style={{
+              background: 'radial-gradient(ellipse at center, rgba(10,8,6,0.88), rgba(10,8,6,0.96))',
+              backdropFilter: 'blur(20px)',
+              willChange: "opacity",
+            }}
             transition={transitionOverlay}
           >
-            <motion.img
-              layoutId={`img-${activeImg}`}
-              src={activeImg}
-              className="max-w-[90vw] max-h-[85vh] rounded-2xl shadow-2xl object-contain"
-              initial={{ scale: 0.5 }}
-              animate={{ scale: 1 }}
-              transition={{
-                delay: 0.3,
-                duration: 0.5,
-                ease: [0.25, 0.1, 0.25, 1],
+            {/* Gold border frame around expanded image */}
+            <motion.div
+              className="relative p-[3px] rounded-2xl"
+              style={{
+                background: 'linear-gradient(135deg, #8B6914, #C9A96E, #F0E0B0, #C9A96E, #8B6914)',
               }}
-              style={{ willChange: "transform" }}
-            />
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <motion.img
+                layoutId={`img-${activeImg}`}
+                src={activeImg}
+                alt="DRA portrait"
+                className="max-w-[85vw] max-h-[80vh] rounded-2xl object-contain"
+                style={{ willChange: "transform" }}
+              />
+            </motion.div>
+
+            {/* Close hint */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="absolute bottom-8 text-[10px] uppercase tracking-[0.4em] text-gold/20 font-body"
+            >
+              Click anywhere to close
+            </motion.p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -209,6 +221,7 @@ function ThreeDPhotoCarousel({ images }: { images?: string[] }) {
           controls={controls}
           cards={cards}
           isCarouselActive={isCarouselActive}
+          activeImg={activeImg}
         />
       </div>
     </motion.div>

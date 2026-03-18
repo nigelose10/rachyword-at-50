@@ -5,22 +5,22 @@ const EXPERIENCES = [
   {
     number: '01',
     title: 'The Gala',
-    desc: 'An evening of grandeur — Michelin-starred dining, world-class entertainment, and a celebration worthy of royalty.',
+    desc: 'An evening of grandeur — world-class entertainment and a celebration worthy of royalty.',
   },
   {
     number: '02',
     title: 'The Fellowship',
-    desc: 'An intimate gathering of family, friends, and loved ones. Breaking bread together in gratitude and joy.',
+    desc: 'An intimate gathering of family, friends, and loved ones. Breaking bread in gratitude and joy.',
   },
   {
     number: '03',
     title: 'The Journey',
-    desc: 'Four cities. Four chapters. A global celebration that spans continents and brings communities together.',
+    desc: 'Four cities. Four chapters. A global celebration that spans continents and communities.',
   },
   {
     number: '04',
     title: 'The Legacy',
-    desc: 'Honoring 50 years of grace, faith, and impact. A life that has touched thousands across the world.',
+    desc: 'Honouring 50 years of grace, faith, and impact. A life that has touched thousands.',
   },
 ];
 
@@ -30,7 +30,7 @@ const stagger = {
     show: { transition: { staggerChildren: 0.12 } },
   },
   item: {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 24 },
     show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
   },
 };
@@ -38,13 +38,12 @@ const stagger = {
 export const ExperienceSection: React.FC = () => {
   return (
     <section className="snap-center relative min-h-screen w-full flex items-center justify-center overflow-hidden py-32">
-      {/* Soft radial */}
       <div className="absolute inset-0" style={{
-        background: 'radial-gradient(ellipse at 50% 50%, rgba(201,169,110,0.02), transparent 60%), #0A0806',
+        background: 'radial-gradient(ellipse at 50% 50%, rgba(201,169,110,0.02), transparent 55%), #0A0806',
       }} />
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-8 md:px-16">
-        {/* Header — editorial spacing */}
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -52,39 +51,38 @@ export const ExperienceSection: React.FC = () => {
           viewport={{ once: true }}
           className="text-center mb-24"
         >
-          <div className="w-12 ornate-line mx-auto mb-8" />
-          <h2 className="font-display text-4xl md:text-6xl font-bold text-gold-gradient mb-4">
+          <div className="w-14 ornate-line mx-auto mb-10" />
+          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-gold-gradient mb-5 tracking-tight">
             The Experience
           </h2>
-          <p className="font-body text-sm text-gold/20 tracking-[0.2em]">
+          <p className="font-body text-base md:text-lg text-gold/20 tracking-[0.15em]">
             What Awaits You
           </p>
         </motion.div>
 
-        {/* Grid — generous gap */}
+        {/* Grid */}
         <motion.div
           variants={stagger.container}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12"
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10"
         >
           {EXPERIENCES.map((exp) => (
             <motion.div
               key={exp.number}
               variants={stagger.item}
-              className="glass-card rounded-2xl p-8 md:p-10 group"
+              className="glass-card rounded-2xl p-8 md:p-10 group cursor-default"
             >
-              {/* Number — editorial */}
-              <span className="font-display text-xs text-gold/15 tracking-[0.3em] block mb-5">
+              <span className="font-display text-[11px] text-gold/12 tracking-[0.3em] uppercase block mb-6">
                 {exp.number}
               </span>
 
-              <h3 className="font-display text-xl md:text-2xl font-semibold text-gold-light/80 group-hover:text-gold-light transition-colors duration-500 mb-4">
+              <h3 className="font-display text-xl md:text-2xl font-semibold text-gold-light/75 group-hover:text-gold-light transition-colors duration-500 mb-5">
                 {exp.title}
               </h3>
 
-              <p className="font-body text-sm text-parchment/30 leading-[1.9]">
+              <p className="font-body text-base text-parchment/28 leading-[1.85]">
                 {exp.desc}
               </p>
             </motion.div>

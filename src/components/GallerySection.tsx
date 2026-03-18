@@ -13,29 +13,29 @@ const GALLERY_IMAGES = [
 
 export const GallerySection: React.FC = () => {
   return (
-    <section className="snap-center relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden py-24">
-      {/* Subtle warm glow behind carousel */}
+    <section className="snap-center relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden py-28">
+      {/* Warm ambient glow */}
       <div className="absolute inset-0" style={{
         background: `
-          radial-gradient(ellipse 60% 40% at 50% 50%, rgba(201,169,110,0.03), transparent 60%),
+          radial-gradient(ellipse 50% 35% at 50% 50%, rgba(201,169,110,0.04), transparent 60%),
           #0A0806
         `,
       }} />
 
-      <div className="relative z-10 w-full max-w-6xl mx-auto px-4">
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-20"
         >
-          <div className="w-12 ornate-line mx-auto mb-8" />
-          <h2 className="font-display text-4xl md:text-6xl font-bold text-gold-gradient mb-4">
-            The Woman
+          <div className="w-14 ornate-line mx-auto mb-10" />
+          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-gold-gradient mb-5 tracking-tight">
+            The Gallery
           </h2>
-          <p className="font-body text-sm md:text-base text-gold/20 tracking-[0.2em]">
+          <p className="font-body text-base md:text-lg text-gold/20 tracking-[0.15em]">
             A Portrait of Elegance
           </p>
         </motion.div>
@@ -50,15 +50,15 @@ export const GallerySection: React.FC = () => {
           <ThreeDPhotoCarousel images={GALLERY_IMAGES} />
         </motion.div>
 
-        {/* Subtle instruction */}
+        {/* Instruction */}
         <motion.p
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.5 }}
           viewport={{ once: true }}
-          className="text-center mt-8 text-[10px] uppercase tracking-[0.4em] text-gold/15 font-body"
+          className="text-center mt-10 text-[11px] uppercase tracking-[0.35em] text-gold/15 font-body"
         >
-          Drag to explore · Click to expand
+          Drag to explore · Hover for colour · Click to expand
         </motion.p>
       </div>
     </section>

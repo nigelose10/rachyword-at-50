@@ -11,7 +11,7 @@ const PROGRAM = [
 export const EventProgram: React.FC = () => {
   return (
     <section className="snap-center relative min-h-screen w-full flex items-center justify-center overflow-hidden py-32"
-      style={{ background: 'linear-gradient(180deg, #0A0806, #0E0B08, #0A0806)' }}
+      style={{ background: 'linear-gradient(180deg, #0A0806, #0D0A07, #0A0806)' }}
     >
       <div className="relative z-10 w-full max-w-2xl mx-auto px-8 md:px-12">
         {/* Header */}
@@ -20,49 +20,49 @@ export const EventProgram: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           viewport={{ once: true }}
-          className="text-center mb-20"
+          className="text-center mb-24"
         >
-          <div className="w-12 ornate-line mx-auto mb-8" />
-          <h2 className="font-display text-4xl md:text-6xl font-bold text-gold-gradient mb-4">
+          <div className="w-14 ornate-line mx-auto mb-10" />
+          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-gold-gradient mb-5 tracking-tight">
             The Evening
           </h2>
-          <p className="font-body text-sm text-gold/20 tracking-[0.2em]">
+          <p className="font-body text-base md:text-lg text-gold/20 tracking-[0.15em]">
             Programme of Events
           </p>
         </motion.div>
 
-        {/* Timeline — vertical, all left-aligned for elegance */}
-        <div className="relative pl-8 md:pl-12">
+        {/* Timeline */}
+        <div className="relative pl-10 md:pl-14">
           {/* Gold thread */}
-          <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-gold/15 to-transparent" />
+          <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-gold/12 to-transparent" />
 
-          <div className="space-y-14 md:space-y-16">
+          <div className="space-y-16 md:space-y-20">
             {PROGRAM.map((event, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -16 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
                 viewport={{ once: true }}
                 className="relative"
               >
-                {/* Diamond on gold thread */}
-                <div className="absolute -left-8 md:-left-12 top-1 -translate-x-1/2">
+                {/* Diamond on thread */}
+                <div className="absolute -left-10 md:-left-14 top-1.5 -translate-x-1/2">
                   <div className="diamond-sm" />
                 </div>
 
                 {/* Time */}
-                <span className="font-display text-[11px] text-gold/25 tracking-[0.35em] uppercase block mb-2">
+                <span className="font-display text-[11px] text-gold/22 tracking-[0.3em] uppercase block mb-3">
                   {event.time}
                 </span>
 
                 {/* Title */}
-                <h3 className="font-display text-lg md:text-xl font-semibold text-gold-light/70 mb-2">
+                <h3 className="font-display text-lg md:text-xl font-semibold text-gold-light/65 mb-3">
                   {event.title}
                 </h3>
 
                 {/* Description */}
-                <p className="font-body text-sm text-parchment/25 leading-[1.8]">
+                <p className="font-body text-base text-parchment/25 leading-[1.85]">
                   {event.desc}
                 </p>
               </motion.div>
