@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Great+Vibes&display=swap');
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────────────────────
+   D R A  @  5 0  —  Living Art Design System
+   Awwwards-level · Gaussian Blur · Luxury Whitespace
+   ────────────────────────────────────────────────────────────── */
+
+@theme {
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "Cormorant Garamond", Garamond, serif;
+  --font-script: "Great Vibes", cursive;
+
+  --color-gold: #C9A96E;
+  --color-gold-deep: #8B6914;
+  --color-gold-light: #E8D5A3;
+  --color-gold-shine: #F0E0B0;
+
+  --color-parchment: #FAF6F0;
+  --color-cream: #F8F3E8;
+  --color-noir: #0A0806;
+  --color-noir-warm: #1A1510;
+  --color-burgundy-light: #6B1A1A;
+}
+
+/* ── UTILITIES ── */
+
+@layer utilities {
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #E8D5A3, #C9A96E 40%, #F0E0B0 60%, #8B6914);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .ornate-line {
+    background: linear-gradient(90deg, transparent, rgba(201,169,110,0.35) 50%, transparent);
+    height: 1px;
+  }
+
+  .snap-y-mandatory {
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    height: 100vh;
+  }
+
+  .snap-center {
+    scroll-snap-align: center;
+  }
+}
+
+/* ── BASE ── */
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: #0A0806;
+  color: #FAF6F0;
+  margin: 0;
+  font-family: "Cormorant Garamond", Garamond, serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+::selection { background: rgba(201,169,110,0.2); }
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
+
+/* ── DIAMOND ACCENT ── */
+
+.diamond {
+  width: 8px;
+  height: 8px;
+  background: var(--color-gold);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+.diamond-sm {
+  width: 4px;
+  height: 4px;
+  background: var(--color-gold);
+  transform: rotate(45deg);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+/* ── BUTTON — Sweep Reveal ── */
+
+.btn-gold {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-gold::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; right: 0; bottom: 0;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(201,169,110,0.08), transparent);
+  transition: left 0.6s ease;
+}
+.btn-gold:hover::before { left: 100%; }
+.btn-gold:hover {
+  border-color: rgba(201,169,110,0.5);
+  box-shadow: 0 0 40px rgba(201,169,110,0.08);
+  letter-spacing: 0.3em;
+}
+
+/* ── GOLD FRAME ── */
+
+.gold-frame {
+  border: 2px solid;
+  border-image: linear-gradient(135deg, #8B6914, #C9A96E, #F0E0B0, #C9A96E, #8B6914) 1;
+}
+
+/* ── GLASS CARD ── */
+
+.glass-card {
+  background: rgba(201,169,110,0.03);
+  border: 1px solid rgba(201,169,110,0.1);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.glass-card:hover {
+  border-color: rgba(201,169,110,0.25);
+  box-shadow: 0 0 60px rgba(201,169,110,0.04);
+}
+
+/* ────────────────────────────────────────────────────
+   KEYFRAME ANIMATIONS — 21st.dev inspired
+   Smooth, purposeful, non-janky
+   ──────────────────────────────────────────────────── */
+
+/* Reveal from below with subtle spring */
+@keyframes rise {
+  0%   { opacity: 0; transform: translateY(40px); }
+  60%  { opacity: 1; transform: translateY(-4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Soft fade without movement */
+@keyframes appear {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Scale breathe — for floating elements */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.02); }
+}
+
+/* Horizontal line reveal */
+@keyframes line-reveal {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Scroll indicator */
+@keyframes scroll-pulse {
+  0%   { transform: translateY(-8px); opacity: 0; }
+  50%  { opacity: 1; }
+  100% { transform: translateY(8px); opacity: 0; }
+}
+
+/* Soft shimmer for gold text */
+@keyframes text-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Gaussian blur reveal  */
+@keyframes blur-reveal {
+  from { filter: blur(20px); opacity: 0; transform: scale(1.05); }
+  to   { filter: blur(0px); opacity: 1; transform: scale(1); }
+}
+
+/* ── Animation utility classes ── */
+
+.anim-rise {
+  opacity: 0;
+  animation: rise 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.anim-appear {
+  opacity: 0;
+  animation: appear 0.8s ease forwards;
+}
+.anim-blur-reveal {
+  opacity: 0;
+  animation: blur-reveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.anim-line-reveal {
+  transform-origin: center;
+  transform: scaleX(0);
+  animation: line-reveal 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.anim-breathe {
+  animation: breathe 6s ease-in-out infinite;
+}
+
+/* Stagger delays */
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.25s; }
+.delay-3 { animation-delay: 0.4s; }
+.delay-4 { animation-delay: 0.6s; }
+.delay-5 { animation-delay: 0.8s; }
+.delay-6 { animation-delay: 1s; }
+.delay-7 { animation-delay: 1.2s; }
+.delay-8 { animation-delay: 1.5s; }
+
+/* ──────────────────────────────────────────────────
+   CITY SECTION — Gaussian Blur Background
+   The key "living art" effect
+   ────────────────────────────────────────────────── */
+
+.city-section {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Full-bleed blurred background image */
+.city-bg {
+  position: absolute;
+  inset: -40px; /* overflow to prevent blur edge artifacts */
+  filter: blur(30px) saturate(1.3) brightness(0.4);
+  transform: scale(1.1);
+  z-index: 0;
+}
+
+.city-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Dark vignette over blurred bg */
+.city-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse at center, transparent 30%, rgba(10,8,6,0.7) 100%),
+    linear-gradient(to bottom, rgba(10,8,6,0.5) 0%, transparent 20%, transparent 80%, rgba(10,8,6,0.6) 100%);
+}
+
+/* ── REDUCED MOTION ── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

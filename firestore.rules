@@ -1,0 +1,103 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: rsvps
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required, 1-100 chars) - Full name of the guest
+    //   - email: string (required, valid email format) - Email address
+    //   - city: string (required, enum: 'Dubai', 'London', 'Lagos') - Tour city
+    //   - status: string (required, enum: 'Pending', 'Confirmed', 'Waitlisted') - RSVP status
+    //   - plusOne: boolean (optional) - Plus one indicator
+    //   - createdAt: timestamp (required, immutable) - Creation time
+    //   - uid: string (required, immutable) - User ID
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid;
+    }
+
+    function uidNotModified() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function validStringLength(field, minLen, maxLen) {
+      return request.resource.data[field] is string &&
+        request.resource.data[field].size() >= minLen &&
+        request.resource.data[field].size() <= maxLen;
+    }
+
+    function isValidEmail(email) {
+      return email is string &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidRSVP(data) {
+      return hasOnlyAllowedFields(['name', 'email', 'city', 'status', 'plusOne', 'createdAt', 'uid']) &&
+             hasRequiredFields(['name', 'email', 'city', 'status', 'createdAt', 'uid']) &&
+             validStringLength('name', 1, 100) &&
+             isValidEmail(data.email) &&
+             data.city in ['Dubai', 'London', 'Lagos'] &&
+             data.status in ['Pending', 'Confirmed', 'Waitlisted'] &&
+             (!('plusOne' in data) || data.plusOne is bool) &&
+             data.createdAt is timestamp &&
+             data.uid is string && data.uid.size() > 0 && data.uid.size() < 128;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /rsvps/{rsvpId} {
+      allow read: if isAuthenticated() && request.auth.uid == resource.data.uid;
+      
+      allow create: if isAuthenticated() && 
+                    isValidRSVP(request.resource.data) && 
+                    request.resource.data.uid == request.auth.uid;
+                    
+      allow update: if isDocOwner() && 
+                    isValidRSVP(request.resource.data) && 
+                    uidNotModified() &&
+                    areImmutableFieldsUnchanged(['createdAt', 'uid']);
+                    
+      allow delete: if isDocOwner();
+    }
+  }
+}

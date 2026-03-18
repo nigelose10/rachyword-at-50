@@ -1,0 +1,52 @@
+{
+  "entities": {
+    "RSVP": {
+      "title": "RSVP",
+      "description": "Guest registration for the Rachyword @ 50 global tour.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full name of the guest."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Email address of the guest."
+        },
+        "city": {
+          "type": "string",
+          "enum": ["Dubai", "London", "Lagos"],
+          "description": "The tour city the guest is attending."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Pending", "Confirmed", "Waitlisted"],
+          "description": "The current status of the RSVP."
+        },
+        "plusOne": {
+          "type": "boolean",
+          "description": "Whether the guest is bringing a plus one."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the RSVP submission."
+        },
+        "uid": {
+          "type": "string",
+          "description": "The Firebase Auth UID of the user who submitted the RSVP."
+        }
+      },
+      "required": ["name", "email", "city", "status", "createdAt", "uid"]
+    }
+  },
+  "firestore": {
+    "/rsvps/{rsvpId}": {
+      "schema": {
+        "$ref": "#/entities/RSVP"
+      },
+      "description": "Collection of all guest RSVPs."
+    }
+  }
+}
