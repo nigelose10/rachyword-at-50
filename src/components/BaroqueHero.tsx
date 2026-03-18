@@ -37,7 +37,7 @@ export const BaroqueHero: React.FC<BaroqueHeroProps> = ({ onSaveDate }) => {
         <div className="w-20 ornate-line anim-line-reveal delay-1 mb-16" />
 
         {/* Name */}
-        <p className="anim-rise delay-2 text-[11px] md:text-[13px] uppercase tracking-[0.45em] text-gold-light/45 font-body font-semibold mb-5">
+        <p className="anim-rise delay-2 font-display text-2xl md:text-3xl tracking-[0.12em] text-gold-light/55 font-semibold mb-5">
           Deaconess Rachel Akhuetie
         </p>
 
@@ -61,7 +61,7 @@ export const BaroqueHero: React.FC<BaroqueHeroProps> = ({ onSaveDate }) => {
 
         {/* Script */}
         <span className="anim-rise delay-4 font-script text-4xl sm:text-5xl md:text-6xl text-gold-light/35 -mt-2 md:-mt-4">
-          @ Fifty
+          @ 50
         </span>
 
         <div className="h-12 md:h-16" />
