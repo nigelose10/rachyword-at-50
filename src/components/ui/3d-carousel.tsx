@@ -125,20 +125,14 @@ const Carousel = memo(
                 }}
                 onClick={() => handleClick(imgUrl, i)}
               >
-                <motion.img
+                <img
                   src={imgUrl}
                   alt={`DRA portrait ${i + 1}`}
-                  layoutId={`img-${imgUrl}`}
-                  className="pointer-events-none w-full rounded-xl object-cover aspect-square"
+                  className="pointer-events-none w-full rounded-xl object-cover aspect-square carousel-img"
                   style={{
                     filter: isActive ? 'grayscale(0) brightness(1)' : 'grayscale(1) brightness(0.6)',
                     transition: 'filter 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
                   }}
-                  initial={{ filter: "blur(4px) grayscale(1)" }}
-                  layout="position"
-                  animate={{ filter: isActive ? "blur(0px) grayscale(0)" : "blur(0px) grayscale(1) brightness(0.6)" }}
-                  whileHover={{ filter: "blur(0px) grayscale(0) brightness(1)" }}
-                  transition={transition}
                 />
               </motion.div>
             );

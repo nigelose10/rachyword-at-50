@@ -117,6 +117,17 @@ body {
   border-image: linear-gradient(135deg, #8B6914, #C9A96E, #F0E0B0, #C9A96E, #8B6914) 1;
 }
 
+/* ── CAROUSEL — hover reveals colour ── */
+
+.carousel-img {
+  pointer-events: none;
+}
+
+/* The parent motion.div is the click/hover target */
+div:has(> .carousel-img):hover .carousel-img {
+  filter: grayscale(0) brightness(1) !important;
+}
+
 /* ── GLASS CARD ── */
 
 .glass-card {
