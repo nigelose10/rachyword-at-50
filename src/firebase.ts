@@ -15,7 +15,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Analytics — lazy init, won't crash if unsupported
 isSupported().then((supported) => {
   if (supported) getAnalytics(app);
 });
@@ -43,9 +42,22 @@ export const logout = async () => {
   }
 };
 
-export const submitRSVP = async (uid: string, name: string, email: string, city: string, plusOne: boolean) => {
+export interface RSVPData {
+  uid: string;
+  title: string;
+  surname: string;
+  firstname: string;
+  telephone: string;
+  email: string;
+  attendingThanksgiving: boolean;
+  attendingBirthday: boolean;
+  guestCategory: string;
+  comments: string;
+}
+
+export const submitRSVP = async (data: RSVPData) => {
   try {
-    const q = query(collection(db, 'rsvps'), where('uid', '==', uid));
+    const q = query(collection(db, 'rsvps'), where('uid', '==', data.uid));
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
@@ -53,12 +65,8 @@ export const submitRSVP = async (uid: string, name: string, email: string, city:
     }
 
     const docRef = await addDoc(collection(db, 'rsvps'), {
-      uid,
-      name,
-      email,
-      city,
+      ...data,
       status: 'Pending',
-      plusOne,
       createdAt: serverTimestamp(),
     });
     return docRef.id;
