@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Preloader } from './components/Preloader';
 import { BaroqueNav } from './components/BaroqueNav';
 import { BaroqueHero } from './components/BaroqueHero';
@@ -8,6 +8,7 @@ import { ExperienceSection } from './components/ExperienceSection';
 import { EventProgram } from './components/EventProgram';
 import { BaroqueFooter } from './components/BaroqueFooter';
 import { RSVPModal } from './components/RSVPModal';
+import { AdminDashboard } from './components/AdminDashboard';
 
 const CITIES = [
   {
@@ -44,11 +45,31 @@ function App() {
   const [showPreloader, setShowPreloader] = useState(true);
   const [rsvpOpen, setRsvpOpen] = useState(false);
   const [rsvpCity, setRsvpCity] = useState('Dubai');
+  const [showAdmin, setShowAdmin] = useState(false);
+
+  // Check URL for /admin route
+  useEffect(() => {
+    const checkRoute = () => {
+      setShowAdmin(window.location.hash === '#admin');
+    };
+    checkRoute();
+    window.addEventListener('hashchange', checkRoute);
+    return () => window.removeEventListener('hashchange', checkRoute);
+  }, []);
 
   const handleRSVP = useCallback((city?: string) => {
     if (city) setRsvpCity(city);
     setRsvpOpen(true);
   }, []);
+
+  // Admin view
+  if (showAdmin) {
+    return (
+      <div className="bg-noir text-parchment">
+        <AdminDashboard onBack={() => { window.location.hash = ''; setShowAdmin(false); }} />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-noir text-parchment">
@@ -59,7 +80,6 @@ function App() {
       <main className="snap-y-mandatory">
         <BaroqueHero onSaveDate={() => handleRSVP()} />
 
-        {/* Photo Gallery — right after hero */}
         <GallerySection />
 
         {CITIES.map((city, i) => (
